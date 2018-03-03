@@ -8,7 +8,11 @@
         "php": ">=7.0.0",
         "fideloper/proxy": "~3.3",
         "laravel/framework": "5.5.*",
-        "laravel/tinker": "~1.0"
+        "laravel/tinker": "~1.0",
+        "barryvdh/laravel-ide-helper": "^2.4",
+        "laracasts/flash": "^3.0",
+        "laravelcollective/html": "^5.4.0",
+        "maatwebsite/excel": "^2.1"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
