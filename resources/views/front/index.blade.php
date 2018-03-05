@@ -196,7 +196,6 @@
             var timeout1 = timeout2 = null;
 
             function myLoop () {
-                console.log('curent i: '+ i);
                 if (isStop == true) {
                     window.clearTimeout(timeout1);
                     window.clearTimeout(timeout2);
@@ -231,10 +230,7 @@
                     i++;
                 }, 100);
 
-                timeout2 = setTimeout(function () {    //  call a 3s setTimeout when the loop is called
-                    console.log('scroll: ' + startP + ' height: '+(tblHeight+20));
-                    console.log('has selected: '+ $('#tbShuffer tbody tr').last().hasClass('selected'));
-
+                timeout2 = setTimeout(function () {
                     if (isStop == true) {
                         if (triggerDone) {
                             return false;
@@ -374,6 +370,17 @@
             checkRealCount();
 
             $('.btnStart').on('click', function() {
+                if (parseInt($('.wheel_type:checked').val()) == 1) {
+                    resetScroll();
+                    $('#tbResult tbody').html("");
+                    $(this).prop('disabled', true);
+                    $('.btnStop').prop('disabled', false);
+                    myLoop();
+
+                    return;
+                }
+
+
                 if ($('.award:enabled').length <= 0) {
                     alert('Đã hết giải, không thể tiếp tục quay thưởng.');
                     return;
@@ -403,7 +410,9 @@
             
             $('body').on('finishShuffler', function(e) {
                 setWinner();
-                checkAward();
+                if (parseInt($('.wheel_type:checked').val()) == 2) {
+                    checkAward();
+                }
             });
 
             $('.wheel_type').on('change', function(e) {
