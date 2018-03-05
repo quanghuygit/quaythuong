@@ -176,7 +176,7 @@ class AwardController extends Controller
             $data['award'] = $award;
             $data['awards'] = [$award->id => $award->name];
             $data['contracts'] = Contract::notWin()->get();
-            $data['tvkt'] = Contract::query()->pluck('tvkt', 'id')
+            $data['tvkt'] = Contract::query()->pluck('tvgt', 'id')
                 ->prepend('Chọn tư vấn khai thác', '')
                 ->map(function ($item) {
                     return ucwords(strtolower($item));
