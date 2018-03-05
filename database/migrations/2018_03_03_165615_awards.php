@@ -17,6 +17,7 @@ class Awards extends Migration
             $table->increments('id');
             $table->string('name')->nullable();
             $table->integer('number')->nullable();
+            $table->integer('left')->nullable();
         });
     }
 

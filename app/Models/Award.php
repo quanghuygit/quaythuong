@@ -10,6 +10,7 @@ class Award extends Model
     protected $fillable = [
         "name",
         "number",
+        "left",
     ];
     
     public $timestamps = false;

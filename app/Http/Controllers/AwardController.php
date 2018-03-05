@@ -42,7 +42,9 @@ class AwardController extends Controller
         try {
             DB::beginTransaction();
 
-            Award::query()->create($request->all());
+            $data = $request->all();
+            $data['left'] = $request->get('number', 0);
+            Award::query()->create($data);
 
             flash()->success('Tạo giải thưởng thành công');
             DB::commit();
@@ -106,7 +108,13 @@ class AwardController extends Controller
                 throw new \Exception('Không tìm thấy giải thưởng này.');
             }
 
-            if (!$award->update($request->all())) {
+            $data = $request->all();
+            if ($award->left > $request->get('number') && $request->has('number')) {
+                $upper = $award->number - $request->get('number');
+                $data['left'] = $award->left + $upper < 0 ? 0 : $award->left + $upper;
+            }
+
+            if (!$award->update($data)) {
                 throw new \Exception('Không thể cập nhật giải thưởng này.');
             }
 
@@ -217,11 +225,21 @@ class AwardController extends Controller
             $idContract = $request->get('idContract', null);
             $contract = Contract::query()->findOrFail($idContract);
 
-//            throw new \Exception('abc');
             $data['contract'] = $contract;
             return view('admin.common.contract.tvkt', $data)->render();
         } catch (\Exception $e) {
             return json(['message' => 'không tìm thấy tư vấn khai thác này.'], 400);
+        }
+    }
+
+    public function ajaxUpdateLeft(Request $request)
+    {
+        try {
+
+        } catch (\Exception $e) {
+            return json([
+                'message' => 'Không thể cập nhật'
+            ], 400);
         }
     }
 }

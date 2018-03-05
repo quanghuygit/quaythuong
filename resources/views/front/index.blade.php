@@ -32,7 +32,7 @@
                     @foreach($winners as $award)
                     <div class="col-md-3">
                         <label>
-                            <input type="radio" name="award_type" class="award no-uniform" value="{{ $award->id }}">
+                            <input type="radio" name="award_type" class="award no-uniform" data-limit="{{ $award->number }}" value="{{ $award->id }}" @if($loop->first) checked @endif>
                             {{ $award->name }} (<span class="countLeft countLeft-{{ $award->id }}">{{ $award->number }}</span>)
                         </label>
                     </div>
@@ -120,6 +120,7 @@
     <link href="{{ asset('admin/plugins/datatables/css/jquery.datatables.css') }}" rel="stylesheet" type="text/css"/>
     <link href="{{ asset('admin/plugins/datatables/css/jquery.datatables_themeroller.css') }}" rel="stylesheet" type="text/css"/>
     <script src="{{ asset('https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('front/plugins/visible/visible.js') }}" type="text/javascript"></script>
 {{--    <script src="{{ asset('front/plugins/datatables/dataTables.scroller.min.js') }}"></script>--}}
 {{--    <script src="{{ asset('https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js') }}"></script>--}}
     <style>
@@ -136,7 +137,28 @@
         }
     </style>
     <script type="text/javascript">
+        var views = {!! $views !!};
         var counterWinner = {!! $winners->pluck('number','id') !!};
+        var tempCounterWinner = {!! $winners->pluck('number','id') !!};
+
+        var realCount = null,
+            tempCount = null;
+        function checkCount() {
+            if (localStorage.hasOwnProperty('realCount')) {
+                realCount = localStorage.getItem('realCount');
+            } else {
+                realCount = counterWinner;
+            }
+
+            if (localStorage.hasOwnProperty('tempCount')) {
+                tempCount = localStorage.getItem('tempCount');
+            } else {
+                tempCount = tempCounterWinner;
+            }
+
+            localStorage.setItem('realCount', realCount);
+            localStorage.setItem('tempCount', tempCount);
+        }
 
         var tblShuffer;
         $(document).ready(function() {
@@ -188,7 +210,6 @@
                 if (isStop == true) {
                     window.clearTimeout(timeout1);
                     window.clearTimeout(timeout2);
-                    console.log($('#tbShuffer tbody tr.selected'));
 
                     if (triggerDone) {
                         return false;
@@ -218,7 +239,7 @@
                     $('#tbShuffer tbody tr').eq(i).addClass('selected');
 
                     i++;
-                }, 5);
+                }, 100);
 
                 timeout2 = setTimeout(function () {    //  call a 3s setTimeout when the loop is called
                     console.log('scroll: ' + startP + ' height: '+(tblHeight+20));
@@ -233,19 +254,23 @@
                         return;
                     }
 
-                    if (Math.abs(startP) >= tblHeight+20 && $('#tbShuffer tbody tr').last().hasClass('selected')) {
+                    if (
+                        (Math.abs(startP) >= tblHeight) && $('#tbShuffer tbody tr').last().hasClass('selected') === false
+                    ) {
+                        return;
+                    }
+
+                    startP = -(i*37);
+                    if (
+                        $('#tbShuffer tbody tr').last().hasClass('selected')
+                    ) {
                         $('#tbShuffer tbody tr').removeClass('selected');
                         startP = 0;
-                        $('#tbShuffer').css({
-                            top: startP
-                        });
-                    } else {
-                        $('#tbShuffer').css({
-                            top: startP
-                        });
-                        startP -= 37;
                     }
-                }, 10);
+                    $('#tbShuffer').css({
+                        top: startP
+                    });
+                }, 200);
             }
 
             function resetScroll() {
@@ -261,15 +286,16 @@
 
             function setWheelAward() {
                 avaiableAwards = $('.award:enabled');
-                console.log(avaiableAwards);
                 avaiableAwards.first().prop('checked', true);
+                if (avaiableAwards.length <= 0) {
+                    $('.btnStop').prop('disabled', true);
+                }
             }
 
             function checkAward() {
                 currentAward = $('.award:checked');
                 counter = $('.countLeft-' + currentAward.val());
                 numLeft = parseInt(counter.text()) -1;
-                console.log(currentAward, counter, numLeft);
                 counter.text(numLeft);
                 if (numLeft <= 0) {
                     currentAward.prop('disabled', true);
@@ -279,22 +305,70 @@
 
             }
 
+            function setWinner() {
+                currentAward = $('.award:checked');
+                awardType = currentAward.val();
+
+                contracts = views['award'+awardType];
+                winned = false;
+                selectContract = null;
+                for (var contract in contracts) {
+                    if (contracts[contract].wined === false) {
+                        winned = true;
+                        contracts[contract].wined = true;
+                        selectContract = contracts[contract];
+//                        $('#tbResult tbody').html(contracts[contract].view);
+                        break;
+                    }
+                }
+
+                selected = $('#tbShuffer tbody tr.selected').first();
+                if ($('.wheel_type:checked').val() == 1) {
+                    $('#tbResult tbody').html(selected.html());
+                    return;
+                }
+
+                v1 = $(contracts[contract].view).insertBefore(selected);
+                $('#tbShuffer tbody tr').removeClass('selected');
+                $(v1).removeClass('selected').addClass('selected');
+            }
+
             $('.btnStart').on('click', function() {
+                if ($('.award:enabled').length <= 0) {
+                    alert('Đã hết giải, không thể tiếp tục quay thưởng.');
+                    return;
+                }
+
                 resetScroll();
                 $('#tbResult tbody').html("");
+                $(this).prop('disabled', true);
+                $('.btnStop').prop('disabled', false);
                 myLoop();
             });
 
             $('.btnStop').on('click', function(e) {
                 e.preventDefault();
                 isStop = true;
+                $(this).prop('disabled', true);
+                $('.btnStart').prop('disabled', false);
             });
             
             $('body').on('finishShuffler', function(e) {
+                setWinner();
                 checkAward();
-                console.log('shuffle');
-                console.log($('#tbShuffer tbody tr.selected'));
-                $('#tbResult tbody').html($('#tbShuffer tbody tr.selected').first());
+            });
+
+            $('.wheel_type').on('change', function(e) {
+                oldVal = $('.wheel_type:checked').val();
+                newVal = null;
+
+                if (confirm('Bạn có chắc chắn chuyển qua chế độ quay thưởng này?')) {
+
+                } else {
+                    newVal = $('.wheel_type:checked').val();
+                    switchs = newVal > 1 ? 1 : 2;
+                    $('.wheel_type[value='+switchs+']').prop('checked', true);
+                }
             });
         } );
     </script>
