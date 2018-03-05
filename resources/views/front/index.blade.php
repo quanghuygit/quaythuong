@@ -53,7 +53,6 @@
                         <tr>
                             <th class="f-bold">STT</th>
                             <th class="f-bold">Số HĐ</th>
-                            <th class="f-bold">Chủ HĐ</th>
                             <th class="f-bold">TVGT</th>
                             <th class="f-bold">TVKT</th>
                             <th class="f-bold">Mã Code</th>
@@ -80,7 +79,6 @@
                                 <tr>
                                     <th class="f-bold">STT</th>
                                     <th class="f-bold">Số HĐ</th>
-                                    <th class="f-bold">Chủ HĐ</th>
                                     <th class="f-bold">TVGT</th>
                                     <th class="f-bold">TVKT</th>
                                     <th class="f-bold">Mã Code</th>
@@ -92,7 +90,6 @@
                                         <tr>
                                             <td>{{ $contract->id }}</td>
                                             <td>{{ $contract->contract_id }}</td>
-                                            <td>{{ $contract->contract_user_name }}</td>
                                             <td>{{ $contract->tvgt }}</td>
                                             <td>{{ $contract->tvkt }}</td>
                                             <td>{{ $contract->code }}</td>
