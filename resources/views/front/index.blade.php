@@ -85,15 +85,18 @@
                                 </tr>
                                 </thead>
                                 <tbody >
+
                                 @if (!empty($contracts))
+                                    @php($i=1)
                                     @foreach($contracts as $contract)
-                                        <tr>
+                                        <tr data-index="{{ $i }}">
                                             <td>{{ $contract->id }}</td>
                                             <td>{{ $contract->contract_id }}</td>
                                             <td>{{ $contract->tvgt }}</td>
                                             <td>{{ $contract->tvkt }}</td>
                                             <td>{{ $contract->code }}</td>
                                         </tr>
+                                        @php($i++)
                                     @endforeach
                                 @endif
                                 </tbody>
@@ -204,8 +207,9 @@
                         return false;
                     }
                     triggerDone = true;
+                    sl = $('#tbShuffer tbody tr.selected').first();
                     $('#tbShuffer').css({
-                        top: startP + (37*2)
+                        top: -(parseInt(sl.attr('data-index')) * 37) + (37+37)
                     });
                     $('body').trigger('finishShuffler');
                     return;
@@ -217,8 +221,9 @@
                             return false;
                         }
                         triggerDone = true;
+                        sl = $('#tbShuffer tbody tr.selected').first();
                         $('#tbShuffer').css({
-                            top: startP + (37*3)
+                            top: -(parseInt(sl.attr('data-index')) * 37) + (37+37)
                         });
                         $('body').trigger('finishShuffler');
                         return;
@@ -234,7 +239,7 @@
                     $('#tbShuffer tbody tr').eq(i).addClass('selected');
 
                     i++;
-                }, 100);
+                }, 50);
 
                 timeout2 = setTimeout(function () {
                     if (isStop == true) {
@@ -242,8 +247,9 @@
                             return false;
                         }
                         triggerDone = true;
+                        sl = $('#tbShuffer tbody tr.selected').first();
                         $('#tbShuffer').css({
-                            top: startP + (37*3)
+                            top: -(parseInt(sl.attr('data-index')) * 37) + (37+37)
                         });
                         $('body').trigger('finishShuffler');
                         return;
@@ -265,7 +271,7 @@
                     $('#tbShuffer').css({
                         top: startP
                     });
-                }, 200);
+                }, 100);
             }
 
             function resetScroll() {
@@ -384,6 +390,7 @@
             checkRealCount();
 
             $('.btnStart').on('click', function() {
+                $('.select-delete').remove();
                 if (parseInt($('.wheel_type:checked').val()) == 1) {
                     resetScroll();
                     $('#tbResult tbody').html("");
