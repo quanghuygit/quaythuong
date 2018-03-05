@@ -392,6 +392,14 @@
                 $(this).prop('disabled', true);
                 $('.btnStart').prop('disabled', false);
             });
+
+            $(document).on('keypress', function(e) {
+                if(e.which == 13) {
+                    isStop = true;
+                    $(this).prop('disabled', true);
+                    $('.btnStart').prop('disabled', false);
+                }
+            });
             
             $('body').on('finishShuffler', function(e) {
                 setWinner();
