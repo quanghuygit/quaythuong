@@ -231,4 +231,19 @@ class AwardController extends Controller
             return json(['message' => 'không tìm thấy tư vấn khai thác này.'], 400);
         }
     }
+
+    public function resetLeft(Request $request)
+    {
+        try {
+            $winners = Award::all();
+            foreach ($winners as $winner) {
+                $winner->left = $winner->number;
+                $winner->save();
+            }
+
+            return redirect()->route('award.index');
+        } catch (\Exception $e) {
+            return json(['message' => 'không tìm thấy tư vấn khai thác này.'], 400);
+        }
+    }
 }

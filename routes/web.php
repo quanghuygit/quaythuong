@@ -29,6 +29,7 @@ Route::group(['prefix' => 'backend'], function () {
         Route::delete('delete/{id}', ['uses' => 'ContractController@delete', 'as' => 'contract.delete']);
     });
     Route::resource('award', 'AwardController');
+    Route::get('resetLeft', ['uses' => 'AwardController@resetLeft','as' => 'resetLeft']);
     Route::group(['prefix' => 'adward'], function () {
         Route::get('delete/{id}', ['uses' => 'AwardController@destroy', 'as' => 'award.delete']);
         Route::get('winners', ['uses' => 'AwardController@winners', 'as' => 'award.winners']);

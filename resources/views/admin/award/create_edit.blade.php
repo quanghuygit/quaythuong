@@ -33,6 +33,13 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="inputEmail3" class="col-sm-2 control-label">Số lượt quay còn lại</label>
+                        <div class="col-sm-10">
+                            {!! Form::text('left', null, ['class' => 'form-control', 'placeholder' => 'Số lượt quay còn lại']) !!}
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
                             <button type="submit" class="btn btn-success">@if (!empty($award)) Cập nhật @else Thêm giải @endif</button>
                         </div>

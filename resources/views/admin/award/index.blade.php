@@ -4,7 +4,10 @@
     <div class="col-md-12">
         <div class="panel panel-white">
             <div class="panel-heading clearfix">
-                <h4 class="panel-title">Danh sách bốc thăm</h4>
+                <h4 class="panel-title">
+                    Danh sách bốc thăm
+                    <div class="pull-right"><a class="btn btn-danger" href="{{ route('resetLeft') }}">Đặt lại lượt quay</a></div>
+                </h4>
             </div>
             <div class="panel-body">
                 <div class="table-responsive">
@@ -14,6 +17,7 @@
                                 <th>STT</th>
                                 <th>Tên giải thưởng</th>
                                 <th>Số người trúng</th>
+                                <th>Số lượt quay còn lại</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -22,6 +26,7 @@
                                 <th>STT</th>
                                 <th>Tên giải thưởng</th>
                                 <th>Số người trúng</th>
+                                <th>Số lượt quay còn lại</th>
                                 <th>Thao tác</th>
                             </tr>
                         </tfoot>
@@ -32,6 +37,7 @@
                                     <td>{{ $award->id }}</td>
                                     <td>{{ $award->name }}</td>
                                     <td>{{ $award->number }}</td>
+                                    <td>{{ $award->left }}</td>
                                     <td>
                                         <a href="{{ route('award.delete', $award->id) }}" class="btn btn-danger">Xóa</a>
                                         <a href="{{ route('award.edit', $award->id) }}" class="btn btn-info">Sửa</a>
