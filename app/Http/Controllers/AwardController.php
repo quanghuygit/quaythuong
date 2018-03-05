@@ -217,4 +217,18 @@ class AwardController extends Controller
             redirect()->back();
         }
     }
+
+    public function ajaxtvkt(Request $request)
+    {
+
+        try {
+            $idContract = $request->get('idContract', null);
+            $contract = Contract::query()->findOrFail($idContract);
+
+            $data['contract'] = $contract;
+            return view('admin.common.contract.tvkt', $data)->render();
+        } catch (\Exception $e) {
+            return json(['message' => 'không tìm thấy tư vấn khai thác này.'], 400);
+        }
+    }
 }
