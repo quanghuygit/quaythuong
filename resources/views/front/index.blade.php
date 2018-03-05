@@ -204,6 +204,9 @@
                         return false;
                     }
                     triggerDone = true;
+                    $('#tbShuffer').css({
+                        top: startP + (37*2)
+                    });
                     $('body').trigger('finishShuffler');
                     return;
                 }
@@ -214,6 +217,9 @@
                             return false;
                         }
                         triggerDone = true;
+                        $('#tbShuffer').css({
+                            top: startP + (37*3)
+                        });
                         $('body').trigger('finishShuffler');
                         return;
                     }
@@ -236,6 +242,9 @@
                             return false;
                         }
                         triggerDone = true;
+                        $('#tbShuffer').css({
+                            top: startP + (37*3)
+                        });
                         $('body').trigger('finishShuffler');
                         return;
                     }
