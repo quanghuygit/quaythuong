@@ -332,6 +332,14 @@
             }
 
             function setWinner() {
+                selected = $('#tbShuffer tbody tr.selected').first();
+                nextSelected = $(selected).next('tr');
+                console.log(nextSelected);
+                if ($('.wheel_type:checked').val() == 1) {
+                    $('#tbResult tbody').html(selected.html());
+                    return;
+                }
+
                 currentAward = $('.award:checked');
                 awardType = currentAward.val();
 
@@ -339,18 +347,16 @@
                 winned = false;
                 selectContract = null;
                 for (var contract in contracts) {
-                    if (contracts[contract].wined === false) {
+                    console.log(contracts[contract]);
+                    selectContract = contracts[contract];
+                    if (Object.keys(selectContract)) {
                         winned = true;
                         contracts[contract].wined = true;
                         selectContract = contracts[contract];
+                        delete views['award'+awardType][contract];
+                        console.log(views);
                         break;
                     }
-                }
-
-                selected = $('#tbShuffer tbody tr.selected').first();
-                if ($('.wheel_type:checked').val() == 1) {
-                    $('#tbResult tbody').html(selected.html());
-                    return;
                 }
 
                 $.ajax({
@@ -360,11 +366,10 @@
                    async: false
                 });
 
-                    console.log(contracts[contract].view);
-                v1 = $(contracts[contract].view).insertBefore(selected);
+                v1 = $(selectContract.view).insertAfter(selected);
                 $('#tbShuffer tbody tr').removeClass('selected');
                 $(v1).removeClass('selected').addClass('selected');
-                $('#tbResult tbody').html(contracts[contract].view);
+                $('#tbResult tbody').html(selectContract.view);
             }
 
             checkRealCount();
