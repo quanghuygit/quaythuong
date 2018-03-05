@@ -10,8 +10,8 @@ class WheelController extends Controller
 {
     public function index()
     {
-        $data['contracts'] = Contract::notWin()->get();
-//            ->shuffle();
+        $data['contracts'] = Contract::notWin()->get()
+            ->shuffle();
         $data['winners'] =  Award::with('contract')->get();
         $data['views'] =[];
         foreach ($data['winners'] as $award) {
