@@ -29,4 +29,24 @@ class WheelController extends Controller
 
         return view('front.index', $data);
     }
+
+    public function ajaxUpdateLeft(Request $request)
+    {
+        try {
+            $awardId = $request->get('awardId', null);
+            $award = Award::query()->find($awardId);
+            if (!$award) {
+                throw new \Exception('Không thể cập nhật');
+            }
+
+            $award->left = $award->left - 1 <= 0 ? 0 : $award->left-1;
+            $award->update();
+
+            return \Response::json('success');
+        } catch (\Exception $e) {
+            return \Response::json([
+                'message' => 'Không thể cập nhật' . $e->getMessage()
+            ], 400);
+        }
+    }
 }

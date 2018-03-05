@@ -32,7 +32,7 @@
                     @foreach($winners as $award)
                     <div class="col-md-3">
                         <label>
-                            <input type="radio" name="award_type" class="award no-uniform" data-limit="{{ $award->number }}" value="{{ $award->id }}" @if($loop->first) checked @endif>
+                            <input type="radio" data-id="{{ $award->id }}" name="award_type" class="award award-{{ $award->id }} no-uniform" data-real="{{ $award->left }}" data-temp="{{ $award->number }}" data-limit="{{ $award->number }}" value="{{ $award->id }}" @if($loop->first) checked @endif>
                             {{ $award->name }} (<span class="countLeft countLeft-{{ $award->id }}">{{ $award->number }}</span>)
                         </label>
                     </div>
@@ -138,25 +138,18 @@
     </style>
     <script type="text/javascript">
         var views = {!! $views !!};
-        var counterWinner = {!! $winners->pluck('number','id') !!};
+        var counterWinner = {!! $winners->pluck('left','id') !!};
         var tempCounterWinner = {!! $winners->pluck('number','id') !!};
 
         var realCount = null,
             tempCount = null;
         function checkCount() {
-            if (localStorage.hasOwnProperty('realCount')) {
-                realCount = localStorage.getItem('realCount');
-            } else {
-                realCount = counterWinner;
-            }
-
             if (localStorage.hasOwnProperty('tempCount')) {
                 tempCount = localStorage.getItem('tempCount');
             } else {
                 tempCount = tempCounterWinner;
             }
 
-            localStorage.setItem('realCount', realCount);
             localStorage.setItem('tempCount', tempCount);
         }
 
@@ -296,12 +289,52 @@
                 currentAward = $('.award:checked');
                 counter = $('.countLeft-' + currentAward.val());
                 numLeft = parseInt(counter.text()) -1;
+
                 counter.text(numLeft);
+
+                if (parseInt($('.wheel_type:checked').val()) == 2) {
+                    realLeft = parseInt(currentAward.attr('data-real'));
+                    currentAward.attr('data-real', realLeft - 1);
+                    counter.text(realLeft - 1);
+                } else {
+                    currentAward.attr('data-temp', numLeft);
+                    counter.text(numLeft);
+                }
+
                 if (numLeft <= 0) {
                     currentAward.prop('disabled', true);
                     setWheelAward();
                     return;
                 }
+            }
+
+            function checkRealCount() {
+                currentAward = $('.award:checked');
+
+
+                $.each($('.award'), function(key, item) {
+                    adward = $(item);
+                    numLeft = 0;
+                    id = adward.attr('data-id');
+                    adward = $('.award-'+id);
+                    counter = $('.countLeft-' + id);
+                    if (parseInt($('.wheel_type:checked').val()) == 2) {
+                        numLeft = parseInt(adward.attr('data-real'));
+                        adward.attr('data-real', numLeft);
+                        counter.text(numLeft);
+                    } else {
+                        numLeft = parseInt(adward.attr('data-temp'));
+                        adward.attr('data-temp', numLeft);
+                        counter.text(numLeft);
+                    }
+
+                    console.log(numLeft);
+                    if (numLeft <= 0) {
+                        adward.prop('disabled', true);
+                        setWheelAward();
+                        return;
+                    }
+                });
 
             }
 
@@ -317,7 +350,6 @@
                         winned = true;
                         contracts[contract].wined = true;
                         selectContract = contracts[contract];
-//                        $('#tbResult tbody').html(contracts[contract].view);
                         break;
                     }
                 }
@@ -328,10 +360,21 @@
                     return;
                 }
 
+                $.ajax({
+                   url: '{{ route('front.ajaxUpdateLeft') }}',
+                   method: 'POST',
+                   data: {'_token': '{{ csrf_token() }}', awardId: awardType},
+                   async: false
+                });
+
+                    console.log(contracts[contract].view);
                 v1 = $(contracts[contract].view).insertBefore(selected);
                 $('#tbShuffer tbody tr').removeClass('selected');
                 $(v1).removeClass('selected').addClass('selected');
+                $('#tbResult tbody').html(contracts[contract].view);
             }
+
+            checkRealCount();
 
             $('.btnStart').on('click', function() {
                 if ($('.award:enabled').length <= 0) {
@@ -362,6 +405,7 @@
                 oldVal = $('.wheel_type:checked').val();
                 newVal = null;
 
+                checkRealCount();
                 if (confirm('Bạn có chắc chắn chuyển qua chế độ quay thưởng này?')) {
 
                 } else {

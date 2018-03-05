@@ -12,6 +12,7 @@
 */
 
 Route::get('/', ['uses' => 'WheelController@index', 'as' => 'wheel']);
+Route::post('ajax-left', ['uses' => 'WheelController@ajaxUpdateLeft', 'as' => 'front.ajaxUpdateLeft']);
 
 
 Route::group(['prefix' => 'backend'], function () {
