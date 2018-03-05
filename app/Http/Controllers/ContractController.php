@@ -99,7 +99,7 @@ class ContractController extends Controller
 
         for($row = $startRow+1; $row < $Totalrow; $row++) {
             $celVal = $sheet->getCellByColumnAndRow(0, $row)->getValue();
-            $nexCel = $sheet->getCellByColumnAndRow(1, $row)->getValue();
+            $nexCel = $sheet->getCellByColumnAndRow(6, $row)->getValue();
             if (empty($celVal) && empty($nexCel)) {
                 break;
             }
